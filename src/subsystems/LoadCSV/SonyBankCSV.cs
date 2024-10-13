@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 {
-    public class SonyBankCSV
-    {
-        public class Transaction
-        {
-            public DateTime Date { get; set; }
-						public String StoreName { get; set; }
-            public Decimal Amount { get; set; }
-            public Decimal Balance { get; set; }
-            public override String ToString()
-            {
-                return $"{Date.ToString("yyyy-MM-dd")} | {StoreName} | {Amount} | {Balance}";
-            }
-        }
+	public class SonyBankCSV
+	{
+		public class Transaction
+		{
+			public DateTime Date { get; set; }
+			public String StoreName { get; set; }
+			public Decimal Amount { get; set; }
+			public Decimal Balance { get; set; }
+			public override String ToString()
+			{
+				return $"{Date.ToString("yyyy-MM-dd")} | {StoreName} | {Amount} | {Balance}";
+			}
+		}
 
-    public List<Transaction> ParseCSV(String filePath)
-    {
+		public List<Transaction> ParseCSV(String filePath)
+		{
 			var transactions = new List<Transaction>();
 
 			try
@@ -48,6 +48,8 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 
 						// 空白行をスキップ
 						if (String.IsNullOrWhiteSpace(line)) continue;
+						// 「Visaデビット」の明細以外スキップ
+						if (!line.Contains("Visaデビット")) continue;
 
 						var values = line.Split(',');
 
@@ -99,7 +101,7 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 
 		private String ExtractStoreName(String description)
 		{
-			const String UsageTypeTag= "Visaデビット";
+			const String UsageTypeTag = "Visaデビット";
 			// 店名を抽出するための簡単な処理
 			if (description.Contains(UsageTypeTag))
 			{
