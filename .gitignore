@@ -3,5 +3,9 @@
 ################################################################################
 
 /obj
-/.vs/SonyBankUsageRecordParse
-/.vs/ProjectEvaluation
+/vs
+/.vs
+/bin
+
+*.sln
+*.csproj.user
