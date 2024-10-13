@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
@@ -13,13 +14,12 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
         public class Transaction
         {
             public DateTime Date { get; set; }
-            public String Description { get; set; }
+						public String StoreName { get; set; }
             public Decimal Amount { get; set; }
             public Decimal Balance { get; set; }
-
             public override String ToString()
             {
-                return $"{Date.ToString("yyyy-MM-dd")} | {Description} | {Amount} | {Balance}";
+                return $"{Date.ToString("yyyy-MM-dd")} | {StoreName} | {Amount} | {Balance}";
             }
         }
 
@@ -34,8 +34,8 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 				// Shift-JISエンコーディングを指定してファイルを読み込む
 				using (var reader = new StreamReader(filePath, Encoding.GetEncoding("Shift-JIS")))
 				{
-					string line;
-					bool isFirstLine = true;
+					String line;
+					Boolean isFirstLine = true;
 
 					while ((line = reader.ReadLine()) != null)
 					{
@@ -47,7 +47,7 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 						}
 
 						// 空白行をスキップ
-						if (string.IsNullOrWhiteSpace(line)) continue;
+						if (String.IsNullOrWhiteSpace(line)) continue;
 
 						var values = line.Split(',');
 
@@ -63,20 +63,21 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 							// 日付、説明、金額、残高をパース
 							var date = DateTime.ParseExact(values[0].Trim('"'), "yyyy年MM月dd日", CultureInfo.InvariantCulture);
 							var description = values[1].Trim('"');
+							var storeName = ExtractStoreName(description);
 
 							// 金額のパース
 							var amountString = values[4].Replace(",", "").Trim('"');
-							decimal amount = string.IsNullOrWhiteSpace(amountString) ? 0 : decimal.Parse(amountString);
+							Decimal amount = String.IsNullOrWhiteSpace(amountString) ? 0 : Decimal.Parse(amountString);
 
 							// 残額のパース
 							var balanceString = values[5].Replace(",", "").Trim('"');
-							decimal balance = string.IsNullOrWhiteSpace(balanceString) ? 0 : decimal.Parse(balanceString);
+							Decimal balance = String.IsNullOrWhiteSpace(balanceString) ? 0 : Decimal.Parse(balanceString);
 
 
 							transactions.Add(new Transaction
 							{
 								Date = date,
-								Description = description,
+								StoreName = storeName,
 								Amount = amount,
 								Balance = balance
 							});
@@ -96,5 +97,31 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 			return transactions;
 		}
 
-    }
+		private String ExtractStoreName(String description)
+		{
+			const String UsageTypeTag= "Visaデビット";
+			// 店名を抽出するための簡単な処理
+			if (description.Contains(UsageTypeTag))
+			{
+				// "Visaデビット"の後の部分を取得
+				var parts = description.Split(new[] { ' ', '　' }, StringSplitOptions.RemoveEmptyEntries);
+				// "Visaデビット"の次からすべてを結合して店名とする
+				Int32 startIndex = Array.IndexOf(parts, UsageTypeTag) + 1;
+				if (startIndex < parts.Length)
+				{
+					// 数字以外の部分をフィルタリング
+					var storeParts = new List<string>();
+					for (int i = startIndex; i < parts.Length; i++)
+					{
+						if (!Regex.IsMatch(parts[i], @"^\d+$")) // 数字のみの部分を除外
+						{
+							storeParts.Add(parts[i]);
+						}
+					}
+					return string.Join(" ", storeParts); // 店名を結合して返す
+				}
+			}
+			return String.Empty;
+		}
+	}
 }
