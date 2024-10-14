@@ -110,7 +110,7 @@
 			tabControlCSV.Controls.Add(tabTransactionsPage);
 			tabControlCSV.Controls.Add(tabLinkStoreExpensPage);
 			tabControlCSV.Controls.Add(tabExpenseCategoryStatisticsPage);
-			tabControlCSV.Font = new Font("Yu Gothic UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 128);
+			tabControlCSV.Font = new Font("Meiryo UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 128);
 			tabControlCSV.Location = new Point(12, 58);
 			tabControlCSV.Name = "tabControlCSV";
 			tabControlCSV.SelectedIndex = 0;
@@ -220,6 +220,7 @@
 			Controls.Add(tabControlCSV);
 			Controls.Add(buttonParseCSVFile);
 			Controls.Add(richTextBox1);
+			Font = new Font("Meiryo UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 128);
 			Name = "MoneyUsageRecordApp";
 			Text = "MoneyUsageRecordApp";
 			Load += Form1_Load;
