@@ -8,4 +8,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="src\subsystems\Logger\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nett" Version="0.15.0" />
+  </ItemGroup>
+
 </Project>
