@@ -153,7 +153,7 @@ namespace SonyBankUsageRecordParse
 			// 選択されている ListView のアイテムを取得
 			if (listViewExpenseRegistration.SelectedItems.Count > 0)
 			{
-				var selectedItem = transactionListView.SelectedItems[0];
+				var selectedItem = listViewExpenseRegistration.SelectedItems[0];
 
 				// 選択された費用項目を取得
 				var selectedExpenseCategory = comboBoxExpenseCategory.SelectedItem.ToString();
