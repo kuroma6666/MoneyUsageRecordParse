@@ -33,11 +33,14 @@
 			columnHeader_StoreName = new ColumnHeader();
 			columnHeader_Amount = new ColumnHeader();
 			columnHeader_Balance = new ColumnHeader();
-			richTextBox1 = new RichTextBox();
+			richTextBox_DispLog = new RichTextBox();
 			buttonParseCSVFile = new Button();
-			tabControlCSV = new TabControl();
+			tabControlListViews = new TabControl();
 			tabTransactionsPage = new TabPage();
 			tabLinkStoreExpensPage = new TabPage();
+			groupBox_LinkStoreExpensPageCtrl = new GroupBox();
+			buttonLinkStoreExpensPageRegister = new Button();
+			textBox_StoreNameExpenseCategory = new TextBox();
 			listViewExpenseRegistration = new ListView();
 			column_ExpenseCategory = new ColumnHeader();
 			column_StoreName = new ColumnHeader();
@@ -46,10 +49,12 @@
 			listViewExpenseStatistics = new ListView();
 			columnHeader_ExpenseCategory = new ColumnHeader();
 			columnHeader_TotalAmount = new ColumnHeader();
-			buttonLinkStoreToExpense = new Button();
-			tabControlCSV.SuspendLayout();
+			buttonGenerateStatistics = new Button();
+			buttonDisplayStoreNameTagList = new Button();
+			tabControlListViews.SuspendLayout();
 			tabTransactionsPage.SuspendLayout();
 			tabLinkStoreExpensPage.SuspendLayout();
+			groupBox_LinkStoreExpensPageCtrl.SuspendLayout();
 			tabExpenseCategoryStatisticsPage.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -61,7 +66,7 @@
 			transactionListView.GridLines = true;
 			transactionListView.Location = new Point(3, 6);
 			transactionListView.Name = "transactionListView";
-			transactionListView.Size = new Size(605, 279);
+			transactionListView.Size = new Size(605, 461);
 			transactionListView.TabIndex = 2;
 			transactionListView.UseCompatibleStateImageBehavior = false;
 			transactionListView.View = View.Details;
@@ -86,14 +91,14 @@
 			columnHeader_Balance.Text = "残額";
 			columnHeader_Balance.Width = 100;
 			// 
-			// richTextBox1
+			// richTextBox_DispLog
 			// 
-			richTextBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			richTextBox1.Location = new Point(14, 428);
-			richTextBox1.Name = "richTextBox1";
-			richTextBox1.Size = new Size(620, 96);
-			richTextBox1.TabIndex = 3;
-			richTextBox1.Text = "";
+			richTextBox_DispLog.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			richTextBox_DispLog.Location = new Point(14, 588);
+			richTextBox_DispLog.Name = "richTextBox_DispLog";
+			richTextBox_DispLog.Size = new Size(658, 96);
+			richTextBox_DispLog.TabIndex = 3;
+			richTextBox_DispLog.Text = "";
 			// 
 			// buttonParseCSVFile
 			// 
@@ -103,19 +108,21 @@
 			buttonParseCSVFile.TabIndex = 4;
 			buttonParseCSVFile.Text = "Exec CSV Parse";
 			buttonParseCSVFile.UseVisualStyleBackColor = true;
-			buttonParseCSVFile.Click += buttoParseCSVFile_Click;
+			buttonParseCSVFile.Click += ButtoParseCSVFile_Click;
 			// 
-			// tabControlCSV
+			// tabControlListViews
 			// 
-			tabControlCSV.Controls.Add(tabTransactionsPage);
-			tabControlCSV.Controls.Add(tabLinkStoreExpensPage);
-			tabControlCSV.Controls.Add(tabExpenseCategoryStatisticsPage);
-			tabControlCSV.Font = new Font("Meiryo UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 128);
-			tabControlCSV.Location = new Point(12, 58);
-			tabControlCSV.Name = "tabControlCSV";
-			tabControlCSV.SelectedIndex = 0;
-			tabControlCSV.Size = new Size(622, 321);
-			tabControlCSV.TabIndex = 5;
+			tabControlListViews.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+			tabControlListViews.Controls.Add(tabTransactionsPage);
+			tabControlListViews.Controls.Add(tabLinkStoreExpensPage);
+			tabControlListViews.Controls.Add(tabExpenseCategoryStatisticsPage);
+			tabControlListViews.Font = new Font("Meiryo UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 128);
+			tabControlListViews.Location = new Point(12, 58);
+			tabControlListViews.Name = "tabControlListViews";
+			tabControlListViews.SelectedIndex = 0;
+			tabControlListViews.Size = new Size(660, 503);
+			tabControlListViews.TabIndex = 5;
+			tabControlListViews.SelectedIndexChanged += TabControlListViews_SelectedIndexChanged;
 			// 
 			// tabTransactionsPage
 			// 
@@ -123,34 +130,65 @@
 			tabTransactionsPage.Location = new Point(4, 26);
 			tabTransactionsPage.Name = "tabTransactionsPage";
 			tabTransactionsPage.Padding = new Padding(3);
-			tabTransactionsPage.Size = new Size(614, 291);
+			tabTransactionsPage.Size = new Size(652, 473);
 			tabTransactionsPage.TabIndex = 0;
 			tabTransactionsPage.Text = "利用明細";
 			tabTransactionsPage.UseVisualStyleBackColor = true;
 			// 
 			// tabLinkStoreExpensPage
 			// 
+			tabLinkStoreExpensPage.Controls.Add(groupBox_LinkStoreExpensPageCtrl);
 			tabLinkStoreExpensPage.Controls.Add(listViewExpenseRegistration);
 			tabLinkStoreExpensPage.Location = new Point(4, 26);
 			tabLinkStoreExpensPage.Name = "tabLinkStoreExpensPage";
 			tabLinkStoreExpensPage.Padding = new Padding(3);
-			tabLinkStoreExpensPage.Size = new Size(614, 291);
+			tabLinkStoreExpensPage.Size = new Size(652, 473);
 			tabLinkStoreExpensPage.TabIndex = 1;
 			tabLinkStoreExpensPage.Text = "費用項目登録";
 			tabLinkStoreExpensPage.UseVisualStyleBackColor = true;
 			// 
+			// groupBox_LinkStoreExpensPageCtrl
+			// 
+			groupBox_LinkStoreExpensPageCtrl.Controls.Add(buttonLinkStoreExpensPageRegister);
+			groupBox_LinkStoreExpensPageCtrl.Controls.Add(textBox_StoreNameExpenseCategory);
+			groupBox_LinkStoreExpensPageCtrl.Location = new Point(3, 391);
+			groupBox_LinkStoreExpensPageCtrl.Name = "groupBox_LinkStoreExpensPageCtrl";
+			groupBox_LinkStoreExpensPageCtrl.Size = new Size(643, 76);
+			groupBox_LinkStoreExpensPageCtrl.TabIndex = 2;
+			groupBox_LinkStoreExpensPageCtrl.TabStop = false;
+			groupBox_LinkStoreExpensPageCtrl.Text = "操作エリア";
+			// 
+			// buttonLinkStoreExpensPageRegister
+			// 
+			buttonLinkStoreExpensPageRegister.Location = new Point(6, 52);
+			buttonLinkStoreExpensPageRegister.Name = "buttonLinkStoreExpensPageRegister";
+			buttonLinkStoreExpensPageRegister.Size = new Size(197, 23);
+			buttonLinkStoreExpensPageRegister.TabIndex = 3;
+			buttonLinkStoreExpensPageRegister.Text = "タグ登録";
+			buttonLinkStoreExpensPageRegister.UseVisualStyleBackColor = true;
+			buttonLinkStoreExpensPageRegister.Click += buttonLinkStoreExpensPageRegister_Click;
+			// 
+			// textBox_StoreNameExpenseCategory
+			// 
+			textBox_StoreNameExpenseCategory.AcceptsReturn = true;
+			textBox_StoreNameExpenseCategory.Location = new Point(6, 22);
+			textBox_StoreNameExpenseCategory.Name = "textBox_StoreNameExpenseCategory";
+			textBox_StoreNameExpenseCategory.Size = new Size(197, 24);
+			textBox_StoreNameExpenseCategory.TabIndex = 2;
+			// 
 			// listViewExpenseRegistration
 			// 
+			listViewExpenseRegistration.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 			listViewExpenseRegistration.Columns.AddRange(new ColumnHeader[] { column_ExpenseCategory, column_StoreName, column_Amount });
 			listViewExpenseRegistration.FullRowSelect = true;
 			listViewExpenseRegistration.GridLines = true;
 			listViewExpenseRegistration.Location = new Point(3, 6);
 			listViewExpenseRegistration.Name = "listViewExpenseRegistration";
-			listViewExpenseRegistration.Size = new Size(605, 281);
+			listViewExpenseRegistration.Size = new Size(643, 379);
 			listViewExpenseRegistration.TabIndex = 0;
 			listViewExpenseRegistration.UseCompatibleStateImageBehavior = false;
 			listViewExpenseRegistration.View = View.Details;
-			listViewExpenseRegistration.SelectedIndexChanged += listViewExpenseRegistration_SelectedIndexChanged;
+			listViewExpenseRegistration.SelectedIndexChanged += ListViewExpenseRegistration_SelectedIndexChanged;
 			// 
 			// column_ExpenseCategory
 			// 
@@ -173,20 +211,20 @@
 			tabExpenseCategoryStatisticsPage.Location = new Point(4, 26);
 			tabExpenseCategoryStatisticsPage.Name = "tabExpenseCategoryStatisticsPage";
 			tabExpenseCategoryStatisticsPage.Padding = new Padding(3);
-			tabExpenseCategoryStatisticsPage.Size = new Size(614, 291);
+			tabExpenseCategoryStatisticsPage.Size = new Size(652, 473);
 			tabExpenseCategoryStatisticsPage.TabIndex = 2;
 			tabExpenseCategoryStatisticsPage.Text = "費用項目統計";
 			tabExpenseCategoryStatisticsPage.UseVisualStyleBackColor = true;
 			// 
 			// listViewExpenseStatistics
 			// 
-			listViewExpenseStatistics.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+			listViewExpenseStatistics.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 			listViewExpenseStatistics.Columns.AddRange(new ColumnHeader[] { columnHeader_ExpenseCategory, columnHeader_TotalAmount });
 			listViewExpenseStatistics.FullRowSelect = true;
 			listViewExpenseStatistics.GridLines = true;
 			listViewExpenseStatistics.Location = new Point(3, 6);
 			listViewExpenseStatistics.Name = "listViewExpenseStatistics";
-			listViewExpenseStatistics.Size = new Size(605, 281);
+			listViewExpenseStatistics.Size = new Size(605, 384);
 			listViewExpenseStatistics.TabIndex = 0;
 			listViewExpenseStatistics.UseCompatibleStateImageBehavior = false;
 			listViewExpenseStatistics.View = View.Details;
@@ -201,32 +239,45 @@
 			columnHeader_TotalAmount.Text = "合計金額";
 			columnHeader_TotalAmount.Width = 120;
 			// 
-			// buttonLinkStoreToExpense
+			// buttonGenerateStatistics
 			// 
-			buttonLinkStoreToExpense.Location = new Point(136, 28);
-			buttonLinkStoreToExpense.Name = "buttonLinkStoreToExpense";
-			buttonLinkStoreToExpense.Size = new Size(152, 23);
-			buttonLinkStoreToExpense.TabIndex = 6;
-			buttonLinkStoreToExpense.Text = "Exec LinkStoreExpense";
-			buttonLinkStoreToExpense.UseVisualStyleBackColor = true;
-			buttonLinkStoreToExpense.Click += buttonLinkStoreToExpense_Click;
+			buttonGenerateStatistics.Location = new Point(136, 28);
+			buttonGenerateStatistics.Name = "buttonGenerateStatistics";
+			buttonGenerateStatistics.Size = new Size(169, 23);
+			buttonGenerateStatistics.TabIndex = 6;
+			buttonGenerateStatistics.Text = "Exec GenerateStatistics";
+			buttonGenerateStatistics.UseVisualStyleBackColor = true;
+			buttonGenerateStatistics.Click += ButtonGenerateStatistics_Click;
+			// 
+			// buttonDisplayStoreNameTagList
+			// 
+			buttonDisplayStoreNameTagList.Location = new Point(311, 28);
+			buttonDisplayStoreNameTagList.Name = "buttonDisplayStoreNameTagList";
+			buttonDisplayStoreNameTagList.Size = new Size(202, 23);
+			buttonDisplayStoreNameTagList.TabIndex = 6;
+			buttonDisplayStoreNameTagList.Text = "Exec DisplayStoreNameTags";
+			buttonDisplayStoreNameTagList.UseVisualStyleBackColor = true;
+			buttonDisplayStoreNameTagList.Click += ButtonDisplayStoreNameTagList_Click;
 			// 
 			// MoneyUsageRecordApp
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(646, 536);
-			Controls.Add(buttonLinkStoreToExpense);
-			Controls.Add(tabControlCSV);
+			ClientSize = new Size(684, 696);
+			Controls.Add(buttonDisplayStoreNameTagList);
+			Controls.Add(buttonGenerateStatistics);
+			Controls.Add(tabControlListViews);
 			Controls.Add(buttonParseCSVFile);
-			Controls.Add(richTextBox1);
+			Controls.Add(richTextBox_DispLog);
 			Font = new Font("Meiryo UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 128);
 			Name = "MoneyUsageRecordApp";
 			Text = "MoneyUsageRecordApp";
 			Load += Form1_Load;
-			tabControlCSV.ResumeLayout(false);
+			tabControlListViews.ResumeLayout(false);
 			tabTransactionsPage.ResumeLayout(false);
 			tabLinkStoreExpensPage.ResumeLayout(false);
+			groupBox_LinkStoreExpensPageCtrl.ResumeLayout(false);
+			groupBox_LinkStoreExpensPageCtrl.PerformLayout();
 			tabExpenseCategoryStatisticsPage.ResumeLayout(false);
 			ResumeLayout(false);
 		}
@@ -234,15 +285,15 @@
 		#endregion
 		private ListView transactionListView;
 		private ColumnHeader columnHeader_Date;
-		private RichTextBox richTextBox1;
+		private RichTextBox richTextBox_DispLog;
 		private Button buttonParseCSVFile;
 		private ColumnHeader columnHeader_StoreName;
 		private ColumnHeader columnHeader_Amount;
 		private ColumnHeader columnHeader_Balance;
-		private TabControl tabControlCSV;
+		private TabControl tabControlListViews;
 		private TabPage tabTransactionsPage;
 		private TabPage tabLinkStoreExpensPage;
-		private Button buttonLinkStoreToExpense;
+		private Button buttonGenerateStatistics;
 		private TabPage tabExpenseCategoryStatisticsPage;
 		private ListView listViewExpenseRegistration;
 		private ColumnHeader column_StoreName;
@@ -251,5 +302,9 @@
 		private ListView listViewExpenseStatistics;
 		private ColumnHeader columnHeader_ExpenseCategory;
 		private ColumnHeader columnHeader_TotalAmount;
+		private GroupBox groupBox_LinkStoreExpensPageCtrl;
+		private Button buttonLinkStoreExpensPageRegister;
+		private TextBox textBox_StoreNameExpenseCategory;
+		private Button buttonDisplayStoreNameTagList;
 	}
 }
