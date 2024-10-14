@@ -7,11 +7,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
+using SonyBankUsageRecordParse.src.subsystems.CSV.Common;
+
+namespace SonyBankUsageRecordParse.src.subsystems.CSV
 {
 	public class SonyBankCSV
 	{
-		public class Transaction
+		public class UsageTransaction
 		{
 			public DateTime Date { get; set; }
 			public String StoreName { get; set; }
@@ -23,9 +25,9 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 			}
 		}
 
-		public List<Transaction> ParseCSV(String filePath)
+		public List<UsageTransaction> ParseCSV(String filePath)
 		{
-			var transactions = new List<Transaction>();
+			var transactions = new List<UsageTransaction>();
 
 			try
 			{
@@ -51,12 +53,12 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 						// 「Visaデビット」の明細以外スキップ
 						if (!line.Contains("Visaデビット")) continue;
 
-						var values = line.Split(',');
+						var values = ParseCsvLine(line);
 
 						// 列数チェック（少なくとも6列必要）
 						if (values.Length < 6)
 						{
-							Console.WriteLine($"不正な行が検出されました: {line}");
+							Debug.WriteLine($"不正な行が検出されました: {line}");
 							continue;
 						}
 
@@ -65,18 +67,19 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 							// 日付、説明、金額、残高をパース
 							var date = DateTime.ParseExact(values[0].Trim('"'), "yyyy年MM月dd日", CultureInfo.InvariantCulture);
 							var description = values[1].Trim('"');
-							var storeName = ExtractStoreName(description);
+							var extractionTag = "Visaデビット";
+							var storeName = CSVUtilitiy.ExtractStoreName(description, extractionTag);
 
 							// 金額のパース
-							var amountString = values[4].Replace(",", "").Trim('"');
-							Decimal amount = String.IsNullOrWhiteSpace(amountString) ? 0 : Decimal.Parse(amountString);
+							var amountString = values[4];
+							Decimal amount = ParseAmount(amountString);
 
 							// 残額のパース
 							var balanceString = values[5].Replace(",", "").Trim('"');
 							Decimal balance = String.IsNullOrWhiteSpace(balanceString) ? 0 : Decimal.Parse(balanceString);
 
-
-							transactions.Add(new Transaction
+							// [[UsageTransaction]]レコードを追加
+							transactions.Add(new UsageTransaction
 							{
 								Date = date,
 								StoreName = storeName,
@@ -99,31 +102,58 @@ namespace SonyBankUsageRecordParse.src.subsystems.LoadCSV
 			return transactions;
 		}
 
-		private String ExtractStoreName(String description)
+
+		private static String[] ParseCsvLine(String line)
 		{
-			const String UsageTypeTag = "Visaデビット";
-			// 店名を抽出するための簡単な処理
-			if (description.Contains(UsageTypeTag))
+			// CSVの行を正しく分割する
+			var values = new List<String>();
+			var currentValue = new StringBuilder();
+			Boolean insideQuotes = false;
+
+			foreach (var c in line)
 			{
-				// "Visaデビット"の後の部分を取得
-				var parts = description.Split(new[] { ' ', '　' }, StringSplitOptions.RemoveEmptyEntries);
-				// "Visaデビット"の次からすべてを結合して店名とする
-				Int32 startIndex = Array.IndexOf(parts, UsageTypeTag) + 1;
-				if (startIndex < parts.Length)
+				if (c == '"' && (currentValue.Length == 0 || currentValue[currentValue.Length - 1] != '\\'))
 				{
-					// 数字以外の部分をフィルタリング
-					var storeParts = new List<string>();
-					for (int i = startIndex; i < parts.Length; i++)
-					{
-						if (!Regex.IsMatch(parts[i], @"^\d+$")) // 数字のみの部分を除外
-						{
-							storeParts.Add(parts[i]);
-						}
-					}
-					return string.Join(" ", storeParts); // 店名を結合して返す
+					insideQuotes = !insideQuotes; // 引用符の内外を切り替え
+				}
+				else if (c == ',' && !insideQuotes)
+				{
+					// 引用符の外でカンマに遭遇した場合、値をリストに追加
+					values.Add(currentValue.ToString().Trim('"')); // トリムして追加
+					currentValue.Clear(); // 現在の値をクリア
+				}
+				else
+				{
+					currentValue.Append(c); // 現在の値に文字を追加
 				}
 			}
-			return String.Empty;
+
+			// 最後の値を追加
+			if (currentValue.Length > 0)
+			{
+				values.Add(currentValue.ToString().Trim('"'));
+			}
+
+			return values.ToArray();
+		}
+
+		private static Decimal ParseAmount(String amountString)
+		{
+			amountString = amountString.Replace(",", "").Trim(); // カンマを取り除き、余分な空白を削除
+			Decimal amount;
+
+			if (String.IsNullOrWhiteSpace(amountString))
+			{
+				return 0; // 空または空白の場合は0
+			}
+			else if (!Decimal.TryParse(amountString, out amount))
+			{
+				throw new FormatException($"'{amountString}' は有効な数値ではありません。"); // 変換失敗の場合は例外をスロー
+			}
+
+			return amount; // パースした数値を返す
 		}
 	}
+
+
 }
