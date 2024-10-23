@@ -4,6 +4,7 @@ using SonyBankUsageRecordParse.src.subsystems.CSV.Common;
 using SonyBankUsageRecordParse.src.subsystems.Tagging;
 using SonyBankUsageRecordParse.src.subsystems.Transactions;
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
@@ -12,19 +13,18 @@ namespace SonyBankUsageRecordParse
 	public partial class MoneyUsageRecordApp : Form
 	{
 		private ComboBox comboBoxExpenseCategory;
+
 		private List<ExpenseTransaction> transactions = [];
-
-
+		private Boolean drawWokerRunning = true;
 		public MoneyUsageRecordApp()
 		{
 			InitializeComponent();
 			SetupComboBox();
-
 		}
 
-		private void Form1_Load(object sender, EventArgs e)
+		private void MoneyUsagerRecordApp_Load(object sender, EventArgs e)
 		{
-
+			backgroundWorkerDraw.RunWorkerAsync();
 		}
 
 		private void ButtoParseCSVFile_Click(object sender, EventArgs e)
@@ -77,6 +77,11 @@ namespace SonyBankUsageRecordParse
 			comboBoxExpenseCategory.SelectedIndexChanged += ComboBoxExpenseCategory_SelectedIndexChanged;
 			this.Controls.Add(comboBoxExpenseCategory);
 			// Setup時点では費用項目選択コンボボックスは非表示で良い
+			comboBoxExpenseCategory.Visible = false;
+		}
+
+		private void listViewExpenseRegistration_Scroll(object sender, ScrollEventArgs e)
+		{
 			comboBoxExpenseCategory.Visible = false;
 		}
 
@@ -176,6 +181,7 @@ namespace SonyBankUsageRecordParse
 		{
 			// StoreConfigのインスタンスを作成
 			StoreNameTagConfig storeConfig = new StoreNameTagConfig();
+
 			// storeNameTagを「:」で分割して、店名と費用項目を抽出
 			var parts = storeNameTag.Split(':');
 			if (parts.Length != 2)
@@ -236,6 +242,64 @@ namespace SonyBankUsageRecordParse
 		{
 			var storeNameTagLists = new StoreNameTagLists();
 			storeNameTagLists.Show();
+		}
+
+		private HashSet<String> updatedListViewExpenseRegistrationItems = new HashSet<String>();
+		Boolean isUpdatedListViewExpenseRegistrationItems = false;
+		private void UpdateListViewExpenseRegistration(List<String> storeNameTags)
+		{
+			if (listViewExpenseRegistration.InvokeRequired)
+			{
+				// UI スレッドに戻って処理を実行
+				listViewExpenseRegistration.Invoke(new Action(() =>
+				{
+					UpdateListViewExpenseRegistration(storeNameTags);
+				}));
+			}
+			else
+			{
+				foreach (var storeNameTag in storeNameTags)
+				{
+					var parts = storeNameTag.Split(':');
+					if (parts.Length == 2)
+					{
+						var storeName = parts[0];        // 店名
+						var expenseCategory = parts[1];  // 費用項目
+
+						listViewExpenseRegistration.SuspendLayout();
+						// 既存項目の更新（存在する場合）
+						foreach (ListViewItem item in listViewExpenseRegistration.Items)
+						{
+							if (item.SubItems[1].Text == storeName) // 店名が一致する場合
+							{
+								item.SubItems[0].Text = expenseCategory; // 費用項目を更新
+								isUpdatedListViewExpenseRegistrationItems = true;
+							}
+						}
+						listViewExpenseRegistration.ResumeLayout();
+					}
+				}
+
+			}
+		}
+		private void backgroundWorkerDraw_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+		{
+			StoreNameTagConfig storeConfig = new StoreNameTagConfig();
+			while (drawWokerRunning)
+			{
+				storeConfig.Load();
+				var storeNameTags = storeConfig.StoreNameTags;
+				if (storeNameTags != null)
+				{
+					UpdateListViewExpenseRegistration(storeNameTags);
+				}
+				Thread.Sleep(15000);
+				if (backgroundWorkerDraw.CancellationPending)
+				{
+					e.Cancel = true;
+					return; // キャンセルされたらループを抜ける
+				}
+			}
 		}
 	}
 }
