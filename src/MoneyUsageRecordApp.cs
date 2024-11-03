@@ -13,20 +13,55 @@ namespace SonyBankUsageRecordParse
 	public partial class MoneyUsageRecordApp : Form
 	{
 		private ComboBox comboBoxExpenseCategory;
-
 		private List<ExpenseTransaction> transactions = [];
 		private Boolean drawWokerRunning = true;
+		private const UInt16 DEF_BG_SLEEP = 10000;
+		/// <summary>
+		/// [[MoneyUsageRecordApp]]クラスのコンストラクタ
+		/// </summary>
 		public MoneyUsageRecordApp()
 		{
 			InitializeComponent();
 			SetupComboBox();
 		}
 
-		private void MoneyUsagerRecordApp_Load(object sender, EventArgs e)
+		/// <summary>
+		/// [[MoneyUsageRecordApp]]の読み込みイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void MoneyUsageRecordApp_Load(object sender, EventArgs e)
 		{
 			backgroundWorkerDraw.RunWorkerAsync();
 		}
 
+		/// <summary>
+		/// コンボボックスコントロールのセットアップ
+		/// </summary>
+		private void SetupComboBox()
+		{
+			//費用項目カテゴリのコンボボックスの初期化
+			String[] expenseCategories = [" ", "食費", "外食費", "被服費", "娯楽費", "日用品・雑貨費", "サブスクリプション費"];
+			comboBoxExpenseCategory = new ComboBox
+			{
+				DropDownStyle = ComboBoxStyle.DropDownList,
+				Location = new Point(420, 50),
+				Size = new Size(120, 30),
+				BackColor = listViewExpenseRegistration.BackColor,
+				ForeColor = listViewExpenseRegistration.ForeColor
+			};
+			comboBoxExpenseCategory.Items.AddRange(expenseCategories);
+			comboBoxExpenseCategory.SelectedIndexChanged += ComboBoxExpenseCategory_SelectedIndexChanged;
+			this.Controls.Add(comboBoxExpenseCategory);
+			// Setup時点では費用項目選択コンボボックスは非表示で良い
+			comboBoxExpenseCategory.Visible = false;
+		}
+
+		/// <summary>
+		/// CSVファイルパースボタンのクリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void ButtoParseCSVFile_Click(object sender, EventArgs e)
 		{
 			String csvFilePath = CSVUtilitiy.SelectCSVFile();
@@ -60,31 +95,20 @@ namespace SonyBankUsageRecordParse
 					);
 				listViewExpenseRegistration.Items.Add(expenseItem); // 費用項目登録用ListViewに追加
 			}
-		}
-
-		private void SetupComboBox()
-		{
-			String[] expenseCategories = [" ", "食費", "外食費", "被服費", "娯楽費", "日用品・雑貨費", "サブスクリプション費"];
-			comboBoxExpenseCategory = new ComboBox
+			StoreNameTagConfig storeConfig = new StoreNameTagConfig();
+			storeConfig.Load();
+			var storeNameTags = storeConfig.StoreNameTags;
+			if (storeNameTags != null)
 			{
-				DropDownStyle = ComboBoxStyle.DropDownList,
-				Location = new Point(420, 50),
-				Size = new Size(120, 30),
-				BackColor = listViewExpenseRegistration.BackColor,
-				ForeColor = listViewExpenseRegistration.ForeColor
-			};
-			comboBoxExpenseCategory.Items.AddRange(expenseCategories);
-			comboBoxExpenseCategory.SelectedIndexChanged += ComboBoxExpenseCategory_SelectedIndexChanged;
-			this.Controls.Add(comboBoxExpenseCategory);
-			// Setup時点では費用項目選択コンボボックスは非表示で良い
-			comboBoxExpenseCategory.Visible = false;
+				UpdateListViewExpenseRegistration(storeNameTags);
+			}
 		}
 
-		private void listViewExpenseRegistration_Scroll(object sender, ScrollEventArgs e)
-		{
-			comboBoxExpenseCategory.Visible = false;
-		}
-
+		/// <summary>
+		/// 統計生成ボタンのクリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void ButtonGenerateStatistics_Click(object sender, EventArgs e)
 		{
 			listViewExpenseStatistics.Items.Clear();
@@ -93,7 +117,7 @@ namespace SonyBankUsageRecordParse
 			foreach (ListViewItem item in listViewExpenseRegistration.Items)
 			{
 				if (item.SubItems[0].Text.Contains(" ")) continue;
-				if (comboBoxExpenseCategory.SelectedItem != null && !String.IsNullOrEmpty(item.SubItems[1].Text))
+				if (!String.IsNullOrEmpty(item.SubItems[1].Text))
 				{
 					String category = item.SubItems[0].Text;
 					String amountText = item.SubItems[2].Text;
@@ -121,6 +145,32 @@ namespace SonyBankUsageRecordParse
 			}
 		}
 
+		/// <summary>
+		/// 店名費用項目ページ登録ボタンのクリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void buttonLinkStoreExpensPageRegister_Click(object sender, EventArgs e)
+		{
+			LinkStoreToExpenseCategory(textBox_StoreNameExpenseCategory.Text);
+		}
+
+		/// <summary>
+		/// 店名タグ表示ボタンのクリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ButtonDisplayStoreNameTagList_Click(object sender, EventArgs e)
+		{
+			var storeNameTagLists = new StoreNameTagLists();
+			storeNameTagLists.Show();
+		}
+
+		/// <summary>
+		/// 費用項目登録リストの行項目選択イベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void ListViewExpenseRegistration_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listViewExpenseRegistration.SelectedItems.Count > 0)
@@ -129,7 +179,7 @@ namespace SonyBankUsageRecordParse
 				var itemBounds = selectedItem.GetBounds(ItemBoundsPortion.Label);
 				var expenseCategoryColumnWidth = transactionListView.Columns[0].Width;
 				// [[comboBoxExpenseCategory]]の描画更新
-				comboBoxExpenseCategory.Location = new Point(itemBounds.Left + 20, itemBounds.Top + 90);
+				comboBoxExpenseCategory.Location = new Point(itemBounds.Left + 20, itemBounds.Top + 88);
 				comboBoxExpenseCategory.Width = expenseCategoryColumnWidth + 15;
 				comboBoxExpenseCategory.Visible = true;
 				comboBoxExpenseCategory.BringToFront();
@@ -147,6 +197,11 @@ namespace SonyBankUsageRecordParse
 			}
 		}
 
+		/// <summary>
+		/// 費用項目カテゴリコンボボックスの項目選択イベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void ComboBoxExpenseCategory_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			// 選択されている ListView のアイテムを取得
@@ -171,12 +226,23 @@ namespace SonyBankUsageRecordParse
 			}
 		}
 
+		/// <summary>
+		/// リストタブのタブ選択イベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void TabControlListViews_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			comboBoxExpenseCategory.Visible = false;
 
 		}
 
+		Boolean isUpdatedListViewExpenseRegistrationItems = false;
+
+		/// <summary>
+		/// 店名を費用項目カテゴリと紐づける
+		/// </summary>
+		/// <param name="storeNameTag"></param>
 		private void LinkStoreToExpenseCategory(String storeNameTag)
 		{
 			// StoreConfigのインスタンスを作成
@@ -233,19 +299,10 @@ namespace SonyBankUsageRecordParse
 			}
 		}
 
-		private void buttonLinkStoreExpensPageRegister_Click(object sender, EventArgs e)
-		{
-			LinkStoreToExpenseCategory(textBox_StoreNameExpenseCategory.Text);
-		}
-
-		private void ButtonDisplayStoreNameTagList_Click(object sender, EventArgs e)
-		{
-			var storeNameTagLists = new StoreNameTagLists();
-			storeNameTagLists.Show();
-		}
-
-		private HashSet<String> updatedListViewExpenseRegistrationItems = new HashSet<String>();
-		Boolean isUpdatedListViewExpenseRegistrationItems = false;
+		/// <summary>
+		/// 費用項目登録リストの更新
+		/// </summary>
+		/// <param name="storeNameTags"></param>
 		private void UpdateListViewExpenseRegistration(List<String> storeNameTags)
 		{
 			if (listViewExpenseRegistration.InvokeRequired)
@@ -282,6 +339,12 @@ namespace SonyBankUsageRecordParse
 
 			}
 		}
+
+		/// <summary>
+		/// 描画バックグラウンドワーカーの定周期更新イベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void backgroundWorkerDraw_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
 		{
 			StoreNameTagConfig storeConfig = new StoreNameTagConfig();
@@ -293,7 +356,7 @@ namespace SonyBankUsageRecordParse
 				{
 					UpdateListViewExpenseRegistration(storeNameTags);
 				}
-				Thread.Sleep(15000);
+				Thread.Sleep(DEF_BG_SLEEP);
 				if (backgroundWorkerDraw.CancellationPending)
 				{
 					e.Cancel = true;

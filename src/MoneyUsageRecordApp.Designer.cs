@@ -38,6 +38,10 @@
 			tabControlListViews = new TabControl();
 			tabTransactionsPage = new TabPage();
 			tabLinkStoreExpensPage = new TabPage();
+			listViewExpenseRegistration = new ListView();
+			column_ExpenseCategory = new ColumnHeader();
+			column_StoreName = new ColumnHeader();
+			column_Amount = new ColumnHeader();
 			groupBox_LinkStoreExpensPageCtrl = new GroupBox();
 			buttonLinkStoreExpensPageRegister = new Button();
 			textBox_StoreNameExpenseCategory = new TextBox();
@@ -48,10 +52,6 @@
 			buttonGenerateStatistics = new Button();
 			buttonDisplayStoreNameTagList = new Button();
 			backgroundWorkerDraw = new System.ComponentModel.BackgroundWorker();
-			listViewExpenseRegistration = new ListView();
-			column_ExpenseCategory = new ColumnHeader();
-			column_StoreName = new ColumnHeader();
-			column_Amount = new ColumnHeader();
 			tabControlListViews.SuspendLayout();
 			tabTransactionsPage.SuspendLayout();
 			tabLinkStoreExpensPage.SuspendLayout();
@@ -99,7 +99,7 @@
 			richTextBox_DispLog.Name = "richTextBox_DispLog";
 			richTextBox_DispLog.Size = new Size(658, 96);
 			richTextBox_DispLog.TabIndex = 3;
-			richTextBox_DispLog.Text = "";
+			richTextBox_DispLog.Text = "【⚠ログ表示は未実装機能です】";
 			// 
 			// buttonParseCSVFile
 			// 
@@ -118,7 +118,7 @@
 			tabControlListViews.Controls.Add(tabLinkStoreExpensPage);
 			tabControlListViews.Controls.Add(tabExpenseCategoryStatisticsPage);
 			tabControlListViews.Font = new Font("Meiryo UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 128);
-			tabControlListViews.Location = new Point(12, 58);
+			tabControlListViews.Location = new Point(12, 57);
 			tabControlListViews.Name = "tabControlListViews";
 			tabControlListViews.SelectedIndex = 0;
 			tabControlListViews.Size = new Size(660, 503);
@@ -148,6 +148,34 @@
 			tabLinkStoreExpensPage.Text = "費用項目登録";
 			tabLinkStoreExpensPage.UseVisualStyleBackColor = true;
 			// 
+			// listViewExpenseRegistration
+			// 
+			listViewExpenseRegistration.Columns.AddRange(new ColumnHeader[] { column_ExpenseCategory, column_StoreName, column_Amount });
+			listViewExpenseRegistration.FullRowSelect = true;
+			listViewExpenseRegistration.GridLines = true;
+			listViewExpenseRegistration.Location = new Point(3, 3);
+			listViewExpenseRegistration.Name = "listViewExpenseRegistration";
+			listViewExpenseRegistration.Size = new Size(629, 382);
+			listViewExpenseRegistration.TabIndex = 0;
+			listViewExpenseRegistration.UseCompatibleStateImageBehavior = false;
+			listViewExpenseRegistration.View = View.Details;
+			listViewExpenseRegistration.SelectedIndexChanged += ListViewExpenseRegistration_SelectedIndexChanged;
+			// 
+			// column_ExpenseCategory
+			// 
+			column_ExpenseCategory.Text = "費用項目";
+			column_ExpenseCategory.Width = 120;
+			// 
+			// column_StoreName
+			// 
+			column_StoreName.Text = "店名";
+			column_StoreName.Width = 200;
+			// 
+			// column_Amount
+			// 
+			column_Amount.Text = "金額";
+			column_Amount.Width = 120;
+			// 
 			// groupBox_LinkStoreExpensPageCtrl
 			// 
 			groupBox_LinkStoreExpensPageCtrl.Anchor = AnchorStyles.Bottom;
@@ -176,7 +204,7 @@
 			textBox_StoreNameExpenseCategory.AcceptsReturn = true;
 			textBox_StoreNameExpenseCategory.Location = new Point(6, 22);
 			textBox_StoreNameExpenseCategory.Name = "textBox_StoreNameExpenseCategory";
-			textBox_StoreNameExpenseCategory.Size = new Size(197, 24);
+			textBox_StoreNameExpenseCategory.Size = new Size(327, 24);
 			textBox_StoreNameExpenseCategory.TabIndex = 2;
 			// 
 			// tabExpenseCategoryStatisticsPage
@@ -238,34 +266,6 @@
 			backgroundWorkerDraw.WorkerSupportsCancellation = true;
 			backgroundWorkerDraw.DoWork += backgroundWorkerDraw_DoWork;
 			// 
-			// listViewExpenseRegistration
-			// 
-			listViewExpenseRegistration.Columns.AddRange(new ColumnHeader[] { column_ExpenseCategory, column_StoreName, column_Amount });
-			listViewExpenseRegistration.FullRowSelect = true;
-			listViewExpenseRegistration.GridLines = true;
-			listViewExpenseRegistration.Location = new Point(3, 3);
-			listViewExpenseRegistration.Name = "listViewExpenseRegistration";
-			listViewExpenseRegistration.Size = new Size(629, 382);
-			listViewExpenseRegistration.TabIndex = 0;
-			listViewExpenseRegistration.UseCompatibleStateImageBehavior = false;
-			listViewExpenseRegistration.View = View.Details;
-			listViewExpenseRegistration.SelectedIndexChanged += ListViewExpenseRegistration_SelectedIndexChanged;
-			// 
-			// column_ExpenseCategory
-			// 
-			column_ExpenseCategory.Text = "費用項目";
-			column_ExpenseCategory.Width = 120;
-			// 
-			// column_StoreName
-			// 
-			column_StoreName.Text = "店名";
-			column_StoreName.Width = 200;
-			// 
-			// column_Amount
-			// 
-			column_Amount.Text = "金額";
-			column_Amount.Width = 120;
-			// 
 			// MoneyUsageRecordApp
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -279,7 +279,7 @@
 			Font = new Font("Meiryo UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 128);
 			Name = "MoneyUsageRecordApp";
 			Text = "MoneyUsageRecordApp";
-			Load += MoneyUsagerRecordApp_Load;
+			Load += MoneyUsageRecordApp_Load;
 			tabControlListViews.ResumeLayout(false);
 			tabTransactionsPage.ResumeLayout(false);
 			tabLinkStoreExpensPage.ResumeLayout(false);
