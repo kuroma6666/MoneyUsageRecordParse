@@ -35,7 +35,7 @@ namespace SonyBankUsageRecordParse.src
 				{
 					var expenseCategory = parts[0];
 					var storeName = parts[1];
-					if(!expenseGroups.ContainsKey(expenseCategory))
+					if (!expenseGroups.ContainsKey(expenseCategory))
 					{
 						expenseGroups[expenseCategory] = new List<String>();
 					}
@@ -53,6 +53,18 @@ namespace SonyBankUsageRecordParse.src
 				treeViewStoreConfig.Nodes.Add(expenseNode); // TreeViewに費用項目を追加
 			}
 
+		}
+
+		private void ExpandStoreNameTagListsbutton_Click(object sender, EventArgs e)
+		{
+			foreach (TreeNode node in treeViewStoreConfig.Nodes)
+			{
+				node.Expand();
+				foreach (TreeNode childNode in node.Nodes)
+				{ 
+					childNode.Expand(); 
+				}
+			}
 		}
 	}
 }
