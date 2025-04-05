@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SonyBankUsageRecordParse.src.subsystems.CSV.Common
 {
@@ -44,6 +40,54 @@ namespace SonyBankUsageRecordParse.src.subsystems.CSV.Common
 				Title = "CSVファイルを選択してください"
 			};
 			return openFileDialog.ShowDialog() == DialogResult.OK ? openFileDialog.FileName : null;
+		}
+
+		public static String[] ParseCsvLine(String line)
+		{
+			var values = new List<String>();
+			var currentValue = new StringBuilder();
+			Boolean insideQuotes = false;
+
+			foreach (var c in line)
+			{
+				if (c == '"' && (currentValue.Length == 0 || currentValue[currentValue.Length - 1] != '\\'))
+				{
+					insideQuotes = !insideQuotes;
+				}
+				else if (c == ',' && !insideQuotes)
+				{
+					values.Add(currentValue.ToString().Trim('"'));
+					currentValue.Clear();
+				}
+				else
+				{
+					currentValue.Append(c);
+				}
+			}
+
+			if (currentValue.Length > 0)
+			{
+				values.Add(currentValue.ToString().Trim('"'));
+			}
+
+			return values.ToArray();
+		}
+
+		public static Decimal ParseAmount(String amountString)
+		{
+			amountString = amountString.Replace(",", "").Trim();
+			Decimal amount;
+
+			if (String.IsNullOrWhiteSpace(amountString))
+			{
+				return 0;
+			}
+			else if (!Decimal.TryParse(amountString, out amount))
+			{
+				throw new FormatException($"'{amountString}' は有効な数値ではありません。");
+			}
+
+			return amount;
 		}
 	}
 }
