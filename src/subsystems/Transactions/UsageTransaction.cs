@@ -1,5 +1,3 @@
-using System;
-
 namespace SonyBankUsageRecordParse.src.subsystems.Transactions
 {
 	public class UsageTransaction

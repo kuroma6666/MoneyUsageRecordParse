@@ -1,14 +1,10 @@
-using SonyBankUsageRecordParse.src;
-using SonyBankUsageRecordParse.src.subsystems.CSV;
-using SonyBankUsageRecordParse.src.subsystems.CSV.Common;
-using SonyBankUsageRecordParse.src.subsystems.Tagging;
-using SonyBankUsageRecordParse.src.subsystems.Transactions;
-using SonyBankUsageRecordParse.src.subsystems.Expense;
-
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
+
+using SonyBankUsageRecordParse.src;
+using SonyBankUsageRecordParse.src.subsystems.CSV.Common;
+using SonyBankUsageRecordParse.src.subsystems.Expense;
+using SonyBankUsageRecordParse.src.subsystems.Transactions;
 namespace SonyBankUsageRecordParse
 {
 	public partial class MoneyUsageRecordApp : Form

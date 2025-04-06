@@ -1,9 +1,5 @@
 using SonyBankUsageRecordParse.src.subsystems.CSV;
-using SonyBankUsageRecordParse.src.subsystems.CSV.Common;
 using SonyBankUsageRecordParse.src.subsystems.Tagging;
-
-using System.Diagnostics;
-using System.Globalization;
 
 namespace SonyBankUsageRecordParse.src.subsystems.Transactions
 {

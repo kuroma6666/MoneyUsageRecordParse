@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using SonyBankUsageRecordParse.src.subsystems.Tagging;
+﻿using SonyBankUsageRecordParse.src.subsystems.Tagging;
 
 namespace SonyBankUsageRecordParse.src
 {
@@ -61,8 +51,8 @@ namespace SonyBankUsageRecordParse.src
 			{
 				node.Expand();
 				foreach (TreeNode childNode in node.Nodes)
-				{ 
-					childNode.Expand(); 
+				{
+					childNode.Expand();
 				}
 			}
 		}
