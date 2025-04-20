@@ -1,4 +1,5 @@
 using SonyBankUsageRecordParse.src.subsystems.CSV;
+using SonyBankUsageRecordParse.src.subsystems.CSV.Common;
 using SonyBankUsageRecordParse.src.subsystems.Tagging;
 
 namespace SonyBankUsageRecordParse.src.subsystems.Transactions
@@ -7,9 +8,9 @@ namespace SonyBankUsageRecordParse.src.subsystems.Transactions
 	{
 		public List<UsageTransaction> Transactions { get; private set; } = new List<UsageTransaction>();
 
-		public void ParseCSVFile(String filePath)
+		public void ParseCSVFile(String filePath, CSVType csvType)
 		{
-			var parser = new CSVParser();
+			var parser = new CSVParser(CSVParserFactory.CreateParser(csvType));
 			Transactions = parser.ParseCSV(filePath);
 		}
 
