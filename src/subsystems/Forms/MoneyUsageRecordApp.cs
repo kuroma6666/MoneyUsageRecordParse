@@ -60,7 +60,20 @@ namespace SonyBankUsageRecordParse
 				return;
 			}
 
-			transactionManager.ParseCSVFile(csvFilePath);
+			if (comboBoxCSVType.SelectedItem == null)
+			{
+				MessageBox.Show("CSV種別を選択してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			var selectedCSVType = comboBoxCSVType.SelectedItem.ToString() switch
+			{
+				"SonyBank" => CSVType.SonyBank,
+				"SMBC" => CSVType.SMBC,
+				_ => throw new InvalidOperationException("無効なCSV種別が選択されました。")
+			};
+
+			transactionManager.ParseCSVFile(csvFilePath, selectedCSVType);
 			Debug.WriteLine("Parse CSV End");
 
 			foreach (var transaction in transactionManager.Transactions)
@@ -75,7 +88,7 @@ namespace SonyBankUsageRecordParse
 
 				String expenseCategoryDefault = ExpenseCategory.None.ToFriendlyString();
 				ListViewItem expenseItem = new ListViewItem(
-					new[] { expenseCategoryDefault, transaction.StoreName, transaction.Amount.ToString("C", CultureInfo.CurrentCulture) }
+						new[] { expenseCategoryDefault, transaction.StoreName, transaction.Amount.ToString("C", CultureInfo.CurrentCulture) }
 				);
 				listViewExpenseRegistration.Items.Add(expenseItem);
 			}
@@ -237,5 +250,6 @@ namespace SonyBankUsageRecordParse
 				}
 			}
 		}
+
 	}
 }

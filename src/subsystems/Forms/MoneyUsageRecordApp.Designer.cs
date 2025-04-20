@@ -52,11 +52,14 @@
 			buttonGenerateStatistics = new Button();
 			buttonDisplayStoreNameTagList = new Button();
 			backgroundWorkerDraw = new System.ComponentModel.BackgroundWorker();
+			comboBoxCSVType = new ComboBox();
+			groupBoxUtilityPanel = new GroupBox();
 			tabControlListViews.SuspendLayout();
 			tabTransactionsPage.SuspendLayout();
 			tabLinkStoreExpensPage.SuspendLayout();
 			groupBox_LinkStoreExpensPageCtrl.SuspendLayout();
 			tabExpenseCategoryStatisticsPage.SuspendLayout();
+			groupBoxUtilityPanel.SuspendLayout();
 			SuspendLayout();
 			// 
 			// transactionListView
@@ -103,11 +106,11 @@
 			// 
 			// buttonParseCSVFile
 			// 
-			buttonParseCSVFile.Location = new Point(14, 28);
+			buttonParseCSVFile.Location = new Point(7, 20);
 			buttonParseCSVFile.Name = "buttonParseCSVFile";
-			buttonParseCSVFile.Size = new Size(116, 23);
+			buttonParseCSVFile.Size = new Size(82, 23);
 			buttonParseCSVFile.TabIndex = 4;
-			buttonParseCSVFile.Text = "Exec CSV Parse";
+			buttonParseCSVFile.Text = "CSV Parse";
 			buttonParseCSVFile.UseVisualStyleBackColor = true;
 			buttonParseCSVFile.Click += ButtoParseCSVFile_Click;
 			// 
@@ -118,7 +121,7 @@
 			tabControlListViews.Controls.Add(tabLinkStoreExpensPage);
 			tabControlListViews.Controls.Add(tabExpenseCategoryStatisticsPage);
 			tabControlListViews.Font = new Font("Meiryo UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 128);
-			tabControlListViews.Location = new Point(12, 57);
+			tabControlListViews.Location = new Point(12, 79);
 			tabControlListViews.Name = "tabControlListViews";
 			tabControlListViews.SelectedIndex = 0;
 			tabControlListViews.Size = new Size(660, 503);
@@ -243,17 +246,17 @@
 			// 
 			// buttonGenerateStatistics
 			// 
-			buttonGenerateStatistics.Location = new Point(136, 28);
+			buttonGenerateStatistics.Location = new Point(228, 20);
 			buttonGenerateStatistics.Name = "buttonGenerateStatistics";
-			buttonGenerateStatistics.Size = new Size(169, 23);
+			buttonGenerateStatistics.Size = new Size(137, 23);
 			buttonGenerateStatistics.TabIndex = 6;
-			buttonGenerateStatistics.Text = "Exec GenerateStatistics";
+			buttonGenerateStatistics.Text = "Generate Statistics";
 			buttonGenerateStatistics.UseVisualStyleBackColor = true;
 			buttonGenerateStatistics.Click += ButtonGenerateStatistics_Click;
 			// 
 			// buttonDisplayStoreNameTagList
 			// 
-			buttonDisplayStoreNameTagList.Location = new Point(311, 28);
+			buttonDisplayStoreNameTagList.Location = new Point(371, 19);
 			buttonDisplayStoreNameTagList.Name = "buttonDisplayStoreNameTagList";
 			buttonDisplayStoreNameTagList.Size = new Size(202, 23);
 			buttonDisplayStoreNameTagList.TabIndex = 6;
@@ -266,15 +269,35 @@
 			backgroundWorkerDraw.WorkerSupportsCancellation = true;
 			backgroundWorkerDraw.DoWork += backgroundWorkerDraw_DoWork;
 			// 
+			// comboBoxCSVType
+			// 
+			comboBoxCSVType.FormattingEnabled = true;
+			comboBoxCSVType.Items.AddRange(new object[] { "SonyBank", "SMBC" });
+			comboBoxCSVType.Location = new Point(95, 20);
+			comboBoxCSVType.Name = "comboBoxCSVType";
+			comboBoxCSVType.Size = new Size(127, 23);
+			comboBoxCSVType.TabIndex = 7;
+			// 
+			// groupBoxUtilityPanel
+			// 
+			groupBoxUtilityPanel.Controls.Add(buttonParseCSVFile);
+			groupBoxUtilityPanel.Controls.Add(buttonDisplayStoreNameTagList);
+			groupBoxUtilityPanel.Controls.Add(comboBoxCSVType);
+			groupBoxUtilityPanel.Controls.Add(buttonGenerateStatistics);
+			groupBoxUtilityPanel.Location = new Point(12, 12);
+			groupBoxUtilityPanel.Name = "groupBoxUtilityPanel";
+			groupBoxUtilityPanel.Size = new Size(653, 49);
+			groupBoxUtilityPanel.TabIndex = 8;
+			groupBoxUtilityPanel.TabStop = false;
+			groupBoxUtilityPanel.Text = "UtilityPanel";
+			// 
 			// MoneyUsageRecordApp
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(684, 696);
-			Controls.Add(buttonDisplayStoreNameTagList);
-			Controls.Add(buttonGenerateStatistics);
+			Controls.Add(groupBoxUtilityPanel);
 			Controls.Add(tabControlListViews);
-			Controls.Add(buttonParseCSVFile);
 			Controls.Add(richTextBox_DispLog);
 			Font = new Font("Meiryo UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 128);
 			Name = "MoneyUsageRecordApp";
@@ -286,6 +309,7 @@
 			groupBox_LinkStoreExpensPageCtrl.ResumeLayout(false);
 			groupBox_LinkStoreExpensPageCtrl.PerformLayout();
 			tabExpenseCategoryStatisticsPage.ResumeLayout(false);
+			groupBoxUtilityPanel.ResumeLayout(false);
 			ResumeLayout(false);
 		}
 
@@ -314,5 +338,7 @@
 		private ColumnHeader column_ExpenseCategory;
 		private ColumnHeader column_StoreName;
 		private ColumnHeader column_Amount;
+		private ComboBox comboBoxCSVType;
+		private GroupBox groupBoxUtilityPanel;
 	}
 }
