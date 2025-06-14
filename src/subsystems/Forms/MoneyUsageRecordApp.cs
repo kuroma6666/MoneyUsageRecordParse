@@ -14,10 +14,12 @@ namespace SonyBankUsageRecordParse
 		private Boolean drawWokerRunning = true;
 		private const UInt16 DEF_BG_SLEEP = 10000;
 		private TransactionManager transactionManager = new();
+		private ExpenseCategoryManager expenseCategoryManager;
 
 		public MoneyUsageRecordApp()
 		{
 			InitializeComponent();
+			expenseCategoryManager = new ExpenseCategoryManager(new JsonExpenseCategoryProvider("config\\categories.json"));
 			SetupComboBox();
 		}
 
@@ -37,9 +39,10 @@ namespace SonyBankUsageRecordParse
 				ForeColor = listViewExpenseRegistration.ForeColor
 			};
 
-			foreach (ExpenseCategory category in Enum.GetValues(typeof(ExpenseCategory)))
+			var categories = expenseCategoryManager.GetCategories();
+			foreach (var category in categories)
 			{
-				comboBoxExpenseCategory.Items.Add(category.ToFriendlyString());
+				comboBoxExpenseCategory.Items.Add(category);
 			}
 
 			comboBoxExpenseCategory.SelectedIndexChanged += ComboBoxExpenseCategory_SelectedIndexChanged;
