@@ -272,7 +272,7 @@
 			// comboBoxCSVType
 			// 
 			comboBoxCSVType.FormattingEnabled = true;
-			comboBoxCSVType.Items.AddRange(new object[] { "SonyBank", "SMBC" });
+			comboBoxCSVType.Items.AddRange(new object[] { "SonyBank v2", "SMBC", "SonyBank v1" });
 			comboBoxCSVType.Location = new Point(95, 20);
 			comboBoxCSVType.Name = "comboBoxCSVType";
 			comboBoxCSVType.Size = new Size(127, 23);

@@ -9,3 +9,4 @@
 
 *.sln
 *.csproj.user
+/Properties/PublishProfiles

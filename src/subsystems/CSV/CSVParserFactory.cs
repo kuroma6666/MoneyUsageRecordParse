@@ -15,7 +15,8 @@ namespace SonyBankUsageRecordParse.src.subsystems.CSV
 		{
 			return csvType switch
 			{
-				CSVType.SonyBank => new SonyBankCSVParser(),
+				CSVType.SonyBankv2 => new SonyBankv2CSVParser(),
+				CSVType.SonyBankv1 => new SonyBankv1CSVParser(),
 				CSVType.SMBC => new SMBCCSVParser(),
 				_ => throw new ArgumentException("未対応のCSV種別です。")
 			};

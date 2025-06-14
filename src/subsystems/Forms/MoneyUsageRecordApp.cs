@@ -71,8 +71,9 @@ namespace SonyBankUsageRecordParse
 
 			var selectedCSVType = comboBoxCSVType.SelectedItem.ToString() switch
 			{
-				"SonyBank" => CSVType.SonyBank,
+				"SonyBank v2" => CSVType.SonyBankv2,
 				"SMBC" => CSVType.SMBC,
+				"SonyBank v1" => CSVType.SonyBankv1,
 				_ => throw new InvalidOperationException("ñ≥å¯Ç»CSVéÌï Ç™ëIëÇ≥ÇÍÇ‹ÇµÇΩÅB")
 			};
 
@@ -160,7 +161,7 @@ namespace SonyBankUsageRecordParse
 				var selectedItem = listViewExpenseRegistration.SelectedItems[0];
 				var itemBounds = selectedItem.GetBounds(ItemBoundsPortion.Label);
 				var expenseCategoryColumnWidth = transactionListView.Columns[0].Width;
-				comboBoxExpenseCategory.Location = new Point(itemBounds.Left + 20, itemBounds.Top + 88);
+				comboBoxExpenseCategory.Location = new Point(itemBounds.Left + 20, itemBounds.Top + 110);
 				comboBoxExpenseCategory.Width = expenseCategoryColumnWidth + 15;
 				comboBoxExpenseCategory.Visible = true;
 				comboBoxExpenseCategory.BringToFront();

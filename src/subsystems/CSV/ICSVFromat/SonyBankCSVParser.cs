@@ -8,7 +8,59 @@ using SonyBankUsageRecordParse.src.subsystems.Transactions;
 
 namespace SonyBankUsageRecordParse.src.subsystems.CSV.ICSVFormat
 {
-	public class SonyBankCSVParser : ICSVFormatParser
+	public class SonyBankv2CSVParser : ICSVFormatParser
+	{
+		public List<UsageTransaction> Parse(StreamReader reader)
+		{
+			var transactions = new List<UsageTransaction>();
+			String line;
+			Boolean isFirstLine = true;
+
+			while ((line = reader.ReadLine()) != null)
+			{
+				if (isFirstLine)
+				{
+					isFirstLine = false;
+					continue;
+				}
+
+				if (String.IsNullOrWhiteSpace(line)) continue;
+				if (!line.Contains("Visaデビット")) continue;
+
+				var values = CSVUtilitiy.ParseCsvLine(line);
+
+				if (values.Length < 6)
+				{
+					Debug.WriteLine($"不正な行が検出されました: {line}");
+					continue;
+				}
+
+				try
+				{
+					var date = DateTime.Parse(values[0], new CultureInfo("ja-JP"));
+					var description = values[1].Trim('"');
+					var extractionTag = "Visaデビット";
+					var storeName = CSVUtilitiy.ExtractStoreName(description, extractionTag);
+
+					var amountString = values[5];
+					Decimal amount = CSVUtilitiy.ParseAmount(amountString);
+
+					var balanceString = values[6].Replace(",", "").Trim('"');
+					Decimal balance = String.IsNullOrWhiteSpace(balanceString) ? 0 : Decimal.Parse(balanceString);
+
+					transactions.Add(new UsageTransaction(date, storeName, amount, balance));
+				}
+				catch (FormatException ex)
+				{
+					Console.WriteLine($"データの形式に問題があります: {ex.Message}");
+				}
+			}
+
+			return transactions;
+		}
+	}
+
+	public class SonyBankv1CSVParser : ICSVFormatParser
 	{
 		public List<UsageTransaction> Parse(StreamReader reader)
 		{
@@ -59,4 +111,5 @@ namespace SonyBankUsageRecordParse.src.subsystems.CSV.ICSVFormat
 			return transactions;
 		}
 	}
+
 }
